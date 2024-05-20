@@ -1,6 +1,13 @@
-Projet C Viet-tien Tran, Mathis Petit
+Projet CDataframe MATTHIEU RAT MILHANE AIFI GROUPE B L1
 
-Lien github : https://github.com/PetitMathis/Projet-CDataframe
+Introduction
 
-Nous avons défini une structure COLUMN représentant une colonne de données, comprenant un titre, un tableau dynamique d'entiers pour stocker les données, et des informations sur la taille logique et physique de la colonne.
-Ensuite, on a créé une structure CDataframe représentant un tableau dynamique de pointeurs vers des colonnes (COLUMN), permettant ainsi de stocker et de manipuler des ensembles de données tabulaires de manière flexible.
+Ce projet implémente une librairie en langage C pour manipuler des données organisées en colonnes. Cette librairie permet de créer, remplir, afficher et manipuler des dataframes contenant des entiers.
+
+Contenu du projet
+
+Le projet contient les fichiers suivants :
+	•	CDataframe.h : Contient les fonctions pour manipuler les dataframes.
+	•	column.h : Contient les fonctions pour manipuler les colonnes.
+	•	main.c : Fichier principal contenant un exemple d'utilisation des fonctions.
+	•	ligne_de_test.c : Fichier de test pour vérifier les fonctionnalités des colonnes.
