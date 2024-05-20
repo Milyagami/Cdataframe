@@ -2,164 +2,198 @@
 #include <string.h>
 #include <stdlib.h>
 
+// Définition d'une structure pour représenter une colonne
 typedef struct {
-    char *titre;
-    int taille_physique;
-    int taille_logique;
-    int *donnees;
-} COLUMN;
-
+    char *nom;                 // Titre de la colonne
+    int capacite;              // Taille physique (capacité) de la colonne
+    int nombre_elements;       // Taille logique (nombre d'éléments) de la colonne
+    int *valeurs;              // Tableau pour stocker les données
+} COLONNE;
 
 /**
-* Create a column
-* @param1 : Column title
-* @return : Pointer to created column
+* Créer une nouvelle colonne
+* @param1 : Titre de la colonne
+* @return : Pointeur vers la colonne créée
 */
-COLUMN *create_column(char* title){
-    COLUMN *new_column = (COLUMN*)malloc(sizeof(COLUMN));
-    if (new_column == NULL) {
+COLONNE *creer_colonne(char* titre) {
+    // Allouer de la mémoire pour une nouvelle colonne
+    COLONNE *nouvelle_colonne = (COLONNE*)malloc(sizeof(COLONNE));
+    if (nouvelle_colonne == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire\n");
         return 0;
     }
-    new_column->titre = (char*)malloc((strlen(title) + 1) * sizeof(char));
-    strcpy(new_column->titre,title); // Copie de la chaîne de titre
-    new_column->donnees = NULL; // Allocation initiale
-    new_column->taille_logique = 0; // Initialisation de la taille logique à 0
-    new_column->taille_physique = 0; // Initialisation de la taille physique
-    return new_column;
-
+    // Allouer de la mémoire pour le titre de la colonne
+    nouvelle_colonne->nom = (char*)malloc((strlen(titre) + 1) * sizeof(char));
+    // Copier le titre dans la nouvelle colonne
+    strcpy(nouvelle_colonne->nom, titre);
+    // Initialiser les données de la colonne
+    nouvelle_colonne->valeurs = NULL;            // Pas de données au départ
+    nouvelle_colonne->nombre_elements = 0;       // Taille logique initialisée à 0
+    nouvelle_colonne->capacite = 0;              // Taille physique initialisée à 0
+    return nouvelle_colonne;
 }
 
 /**
-* @brief : Add a new value to a column
-* @param1 : Pointer to a column
-* @param2 : The value to be added
-* @return : 1 if the value is added 0 otherwise
+* Ajouter une nouvelle valeur dans une colonne
+* @param1 : Pointeur vers la colonne
+* @param2 : Valeur à ajouter
+* @return : 1 si la valeur est ajoutée, 0 sinon
 */
-int insert_value(COLUMN* col, int value){
-    if (col == NULL){
+int ajouter_valeur(COLONNE* col, int valeur) {
+    if (col == NULL) {
         fprintf(stderr, "La colonne est NULL\n");
         return 0;
     }
-    if (col->taille_logique == col->taille_physique) {
-        col->taille_physique += 256;
-        int* new_donnees = (int *)realloc(col->donnees, (col->taille_physique) * sizeof(int));
-        if (new_donnees == NULL) {
+    // Si la taille logique atteint la taille physique, augmenter la taille physique
+    if (col->nombre_elements == col->capacite) {
+        col->capacite += 256; // Augmenter la taille physique de 256
+        // Réallouer de la mémoire pour les nouvelles données
+        int* nouvelles_valeurs = (int *)realloc(col->valeurs, (col->capacite) * sizeof(int));
+        if (nouvelles_valeurs == NULL) {
             fprintf(stderr, "Erreur d'allocation de mémoire\n");
             return 0;
         }
-        col->donnees = new_donnees;
+        col->valeurs = nouvelles_valeurs;
     }
-    *((col->donnees)+(col->taille_logique)) = value;
-    col->taille_logique += 1;
+    // Ajouter la nouvelle valeur à la fin de la colonne
+    col->valeurs[col->nombre_elements] = valeur;
+    col->nombre_elements += 1; // Incrémenter la taille logique
     return 1;
-
 }
 
 /**
-* Free allocated memory
-* @param col : Pointer to a column
+* Libérer la mémoire allouée à une colonne
+* @param col : Pointeur vers la colonne
 */
-void delete_column(COLUMN **col) {
+void liberer_colonne(COLONNE **col) {
     if (col == NULL || *col == NULL) {
         fprintf(stderr, "La colonne est NULL\n");
-    }
-    else{
-
+    } else {
         // Libérer le tableau de données
-        free((*col)->donnees);
-        (*col)->donnees = NULL;
-
+        free((*col)->valeurs);
+        (*col)->valeurs = NULL;
         // Libérer le titre de la colonne
-        free((*col)->titre);
-        (*col)->titre = NULL;
-
+        free((*col)->nom);
+        (*col)->nom = NULL;
         // Libérer la structure de la colonne
         free(*col);
         *col = NULL;
     }
 }
 
+/**
+* Afficher le contenu d'une colonne
+* @param: Pointeur vers la colonne
+*/
+void afficher_colonne(COLONNE* col) {
+    if (col == NULL) {
+        fprintf(stderr, "La colonne est NULL\n");
+    } else {
+        // Parcourir et afficher chaque élément de la colonne
+        for (int i = 0; i < col->nombre_elements; i++) {
+            printf("[%d] %d\n", i, col->valeurs[i]);
+        }
+    }
+}
 
 /**
-* @brief: Print a column content
-* @param: Pointer to a column
+* Compter le nombre d'occurrences d'une valeur dans une colonne
+* @param1 : Pointeur vers la colonne
+* @param2 : Valeur à chercher
+* @return : Nombre d'occurrences
 */
-void print_col(COLUMN* col){
-    if (col == NULL){
+int compter_occurrences(COLONNE* col, int x) {
+    if (col == NULL) {
         fprintf(stderr, "La colonne est NULL\n");
+        return -1;
     }
-    else{
-        for (int i = 0; i < col->taille_logique;i++) {
-            printf("[%d] %d\n", i, col->donnees[i]);
+    int occurrences = 0;
+    // Parcourir la colonne et compter les occurrences de la valeur x
+    for (int i = 0; i < col->nombre_elements; i++) {
+        if (col->valeurs[i] == x) {
+            occurrences++;
         }
     }
+    return occurrences;
 }
 
-int occurence(COLUMN* col, int x){
-    if (col == NULL){
+/**
+* Rechercher une valeur dans une colonne à un indice donné
+* @param1 : Pointeur vers la colonne
+* @param2 : Indice de la valeur à rechercher
+* @return : Valeur à l'indice donné ou -1 si l'indice est hors limites
+*/
+int rechercher_valeur(COLONNE* col, int indice) {
+    if (col == NULL) {
         fprintf(stderr, "La colonne est NULL\n");
         return -1;
     }
-    int occ = 0;
-    for (int i = 0; i < col->taille_logique;i++) {
-        if (col->donnees[i] == x){
-            occ++;
+    if (indice >= col->nombre_elements) {
+        printf("La position %d est supérieure à la taille du tableau\n", indice);
+        return -1;
+    }
+    return col->valeurs[indice];
+}
+
+/**
+* Compter le nombre de valeurs supérieures à une valeur donnée dans une colonne
+* @param1 : Pointeur vers la colonne
+* @param2 : Valeur de référence
+* @return : Nombre de valeurs supérieures
+*/
+int compter_valeurs_superieures(COLONNE* col, int valeur) {
+    if (col == NULL) {
+        fprintf(stderr, "La colonne est NULL\n");
+        return -1;
+    }
+    int nombre_superieures = 0;
+    // Parcourir la colonne et compter les valeurs supérieures à valeur
+    for (int i = 0; i < col->nombre_elements; i++) {
+        if (valeur < col->valeurs[i]) {
+            nombre_superieures++;
         }
     }
-    return occ;
+    return nombre_superieures;
 }
 
-int recherche(COLUMN* col, int indice) {
-    if (col == NULL){
+/**
+* Compter le nombre de valeurs inférieures à une valeur donnée dans une colonne
+* @param1 : Pointeur vers la colonne
+* @param2 : Valeur de référence
+* @return : Nombre de valeurs inférieures
+*/
+int compter_valeurs_inferieures(COLONNE* col, int valeur) {
+    if (col == NULL) {
         fprintf(stderr, "La colonne est NULL\n");
         return -1;
     }
-    if (indice >= col->taille_logique){
-        printf("La position %d est superieur a la taille du tableau",indice);
-        return -1;
-    }
-    return col->donnees[indice];
-}
-
-int nb_val_sup(COLUMN* col, int val){
-    if (col == NULL){
-        fprintf(stderr, "La colonne est NULL\n");
-        return -1;
-    }
-    int nb = 0;
-    for (int i = 0; i < col->taille_logique;i++) {
-        if (val < col->donnees[i]){
-            nb++;
+    int nombre_inferieures = 0;
+    // Parcourir la colonne et compter les valeurs inférieures à valeur
+    for (int i = 0; i < col->nombre_elements; i++) {
+        if (valeur > col->valeurs[i]) {
+            nombre_inferieures++;
         }
     }
-    return nb;
+    return nombre_inferieures;
 }
 
-int nb_val_inf(COLUMN* col, int val){
-    if (col == NULL){
+/**
+* Compter le nombre de valeurs égales à une valeur donnée dans une colonne
+* @param1 : Pointeur vers la colonne
+* @param2 : Valeur de référence
+* @return : Nombre de valeurs égales
+*/
+int compter_valeurs_egales(COLONNE* col, int valeur) {
+    if (col == NULL) {
         fprintf(stderr, "La colonne est NULL\n");
         return -1;
     }
-    int nb = 0;
-    for (int i = 0; i < col->taille_logique;i++) {
-        if (val > col->donnees[i]) {
-            nb++;
+    int nombre_egales = 0;
+    // Parcourir la colonne et compter les valeurs égales à valeur
+    for (int i = 0; i < col->nombre_elements; i++) {
+        if (valeur == col->valeurs[i]) {
+            nombre_egales++;
         }
     }
-    return nb;
-}
-
-int nb_val_egal(COLUMN* col, int val){
-    if (col == NULL){
-        fprintf(stderr, "La colonne est NULL\n");
-        return -1;
-    }
-    int nb = 0;
-    for (int i = 0; i < col->taille_logique;i++) {
-        if (val == col->donnees[i]){
-            nb++;
-        }
-    }
-    return nb;
+    return nombre_egales;
 }
