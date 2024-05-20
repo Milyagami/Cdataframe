@@ -5,7 +5,7 @@
 
 // Définition d'une structure pour représenter un dataframe
 typedef struct {
-    COLUMN **colonnes;  // Tableau de pointeurs vers des colonnes
+    COLONNE **colonnes;  // Tableau de pointeurs vers des colonnes
     int nombre_logique; // Taille logique (nombre de colonnes)
     int capacite_physique; // Taille physique (capacité du tableau de colonnes)
 } Dataframe;
@@ -48,7 +48,7 @@ void remplir_dataframe_utilisateur(Dataframe *df) {
             if (df->nombre_logique == df->capacite_physique) {
                 df->capacite_physique += 256; // Augmenter la taille physique de 256
                 // Réallouer de la mémoire pour les nouvelles colonnes
-                COLUMN **nouveau_df = (COLUMN **)realloc(df->colonnes, (df->capacite_physique) * sizeof(COLUMN*));
+                COLONNE **nouveau_df = (COLONNE **)realloc(df->colonnes, (df->capacite_physique) * sizeof(COLONNE*));
                 if (nouveau_df == NULL) {
                     fprintf(stderr, "Erreur d'allocation de mémoire\n");
                     return;
@@ -62,15 +62,15 @@ void remplir_dataframe_utilisateur(Dataframe *df) {
             nom_colonne[strcspn(nom_colonne, "\n")] = '\0'; // Enlever le retour à la ligne
 
             // Créer une nouvelle colonne avec le titre donné
-            COLUMN *nouvelle_colonne = create_column(nom_colonne);
+            COLONNE *nouvelle_colonne = creer_colonne(nom_colonne);
 
             // Remplir la colonne avec les valeurs saisies par l'utilisateur
             for (int j = 0; j < nb_lignes; j++) {
                 int valeur = 0;
-                printf("Veuillez saisir la valeur %d de la colonne %s : ", j, nouvelle_colonne->titre);
+                printf("Veuillez saisir la valeur %d de la colonne %s : ", j, nouvelle_colonne->nom);
                 scanf("%d", &valeur);
                 getchar();
-                insert_value(nouvelle_colonne, valeur);
+                ajouter_valeur(nouvelle_colonne, valeur);
             }
 
             // Ajouter la colonne au dataframe
@@ -91,7 +91,7 @@ void remplir_dataframe_predefini(Dataframe *df) {
         df->nombre_logique = 2; // Définir le nombre de colonnes
         df->capacite_physique = 256; // Définir la capacité initiale
         // Réallouer de la mémoire pour les nouvelles colonnes
-        COLUMN **nouveau_df = (COLUMN **)realloc(df->colonnes, (df->capacite_physique) * sizeof(COLUMN*));
+        COLONNE **nouveau_df = (COLONNE **)realloc(df->colonnes, (df->capacite_physique) * sizeof(COLONNE*));
         if (nouveau_df == NULL) {
             fprintf(stderr, "Erreur d'allocation de mémoire\n");
             return;
@@ -99,12 +99,16 @@ void remplir_dataframe_predefini(Dataframe *df) {
         df->colonnes = nouveau_df;
 
         // Créer et remplir les colonnes
-        COLUMN *col1 = create_column("gg");
-        COLUMN *col2 = create_column("jjk");
-        insert_value(col1, 2);
-        insert_value(col1, 4);
-        insert_value(col2, 3);
-        insert_value(col2, 9);
+        COLONNE *col1 = creer_colonne("col1");
+        COLONNE *col2 = creer_colonne("col2");
+        ajouter_valeur(col1, 1);
+        ajouter_valeur(col1, 2);
+        ajouter_valeur(col2, 3);
+        ajouter_valeur(col2, 4);
+        ajouter_valeur(col1, 5);
+        ajouter_valeur(col1, 6);
+        ajouter_valeur(col2, 7);
+        ajouter_valeur(col2, 8);
 
         // Ajouter les colonnes au dataframe
         *(df->colonnes) = col1;
@@ -122,15 +126,15 @@ void afficher_dataframe(Dataframe *df) {
     } else {
         // Afficher les titres des colonnes
         for (int k = 0; k < df->nombre_logique; k++) {
-            printf(" %s ", df->colonnes[k]->titre);
+            printf(" %s ", df->colonnes[k]->nom);
         }
         printf("\n");
 
         // Afficher les valeurs des colonnes
-        int taille = (df->colonnes[0])->taille_logique;
+        int taille = (df->colonnes[0])->nombre_elements;
         for (int i = 0; i < taille; i++) {
             for (int j = 0; j < df->nombre_logique; j++) {
-                printf(" %d ", ((df->colonnes[j])->donnees)[i]);
+                printf(" %d ", ((df->colonnes[j])->valeurs)[i]);
             }
             printf("\n");
         }
@@ -174,10 +178,10 @@ void ajouter_ligne(Dataframe *df) {
         // Ajouter une valeur à chaque colonne
         for (int i = 0; i < (df->nombre_logique); i++) {
             int valeur = 0;
-            printf("Veuillez saisir la valeur à ajouter à la colonne %s : ", (df->colonnes[i])->titre);
+            printf("Veuillez saisir la valeur à ajouter à la colonne %s : ", (df->colonnes[i])->nom);
             scanf("%d", &valeur);
             getchar();
-            insert_value(df->colonnes[i], valeur);
+            ajouter_valeur(df->colonnes[i], valeur);
         }
     }
 }
@@ -192,7 +196,7 @@ void enlever_ligne(Dataframe *df) {
     } else {
         // Réduire la taille logique de chaque colonne pour supprimer la dernière ligne
         for (int i = 0; i < (df->nombre_logique); i++) {
-            ((df->colonnes[i])->taille_logique)--;
+            ((df->colonnes[i])->nombre_elements)--;
         }
     }
 }
@@ -209,7 +213,7 @@ void ajouter_colonne(Dataframe *df) {
         if (df->nombre_logique == df->capacite_physique) {
             df->capacite_physique += 256; // Augmenter la taille physique de 256
             // Réallouer de la mémoire pour les nouvelles colonnes
-            COLUMN **nouveau_df = (COLUMN **)realloc(df->colonnes, (df->capacite_physique) * sizeof(COLUMN*));
+            COLONNE **nouveau_df = (COLONNE **)realloc(df->colonnes, (df->capacite_physique) * sizeof(COLONNE*));
             if (nouveau_df == NULL) {
                 fprintf(stderr, "Erreur d'allocation de mémoire\n");
                 return;
@@ -223,15 +227,15 @@ void ajouter_colonne(Dataframe *df) {
         nom_colonne[strcspn(nom_colonne, "\n")] = '\0'; // Enlever le retour à la ligne
 
         // Créer une nouvelle colonne avec le titre donné
-        COLUMN *nouvelle_colonne = create_column(nom_colonne);
+        COLONNE *nouvelle_colonne = creer_colonne(nom_colonne);
 
         // Remplir la colonne avec les valeurs saisies par l'utilisateur
-        for (int j = 0; j < (df->colonnes[0])->taille_logique; j++) {
+        for (int j = 0; j < (df->colonnes[0])->nombre_elements; j++) {
             int valeur = 0;
-            printf("Veuillez saisir la valeur %d de la colonne %s : ", j, nouvelle_colonne->titre);
+            printf("Veuillez saisir la valeur %d de la colonne %s : ", j, nouvelle_colonne->nom);
             scanf("%d", &valeur);
             getchar();
-            insert_value(nouvelle_colonne, valeur);
+            ajouter_valeur(nouvelle_colonne, valeur);
         }
 
         // Ajouter la colonne au dataframe
@@ -257,9 +261,9 @@ void enlever_colonne(Dataframe *df) {
 
         // Parcourir les colonnes pour trouver celle à supprimer
         for (int i = 0; i < (df->nombre_logique); i++) {
-            if (strcmp(nom_colonne, df->colonnes[i]->titre) == 0) {
+            if (strcmp(nom_colonne, df->colonnes[i]->nom) == 0) {
                 // Supprimer la colonne
-                delete_column(&(df->colonnes[i]));
+                liberer_colonne(&(df->colonnes[i]));
                 trouve = 1;
 
                 // Réorganiser les colonnes restantes
@@ -293,15 +297,15 @@ void renommer_colonne(Dataframe *df) {
 
         // Parcourir les colonnes pour trouver celle à renommer
         for (int i = 0; i < df->nombre_logique; i++) {
-            if (strcmp(df->colonnes[i]->titre, ancien_titre) == 0) {
+            if (strcmp(df->colonnes[i]->nom, ancien_titre) == 0) {
                 trouve = 1;
                 printf("Quel est le nouveau nom de la colonne : ");
                 char nouveau_titre[256];
                 fgets(nouveau_titre, sizeof(nouveau_titre), stdin);
                 nouveau_titre[strcspn(nouveau_titre, "\n")] = '\0'; // Enlever le retour à la ligne
-                free(df->colonnes[i]->titre); // Libérer l'ancien titre
-                df->colonnes[i]->titre = (char*)malloc((strlen(nouveau_titre) + 1) * sizeof(char));
-                strcpy(df->colonnes[i]->titre, nouveau_titre); // Copier le nouveau titre
+                free(df->colonnes[i]->nom); // Libérer l'ancien titre
+                df->colonnes[i]->nom = (char*)malloc((strlen(nouveau_titre) + 1) * sizeof(char));
+                strcpy(df->colonnes[i]->nom, nouveau_titre); // Copier le nouveau titre
                 break;
             }
         }
@@ -330,8 +334,8 @@ int verifier_valeur(Dataframe *df) {
 
         // Parcourir toutes les colonnes et toutes les lignes pour trouver la valeur
         for (int i = 0; i < df->nombre_logique; i++) {
-            for (int j = 0; j < df->colonnes[i]->taille_logique; j++) {
-                if (df->colonnes[i]->donnees[j] == valeur) {
+            for (int j = 0; j < df->colonnes[i]->nombre_elements; j++) {
+                if (df->colonnes[i]->valeurs[j] == valeur) {
                     trouve = 1;
                     break;
                 }
@@ -362,7 +366,7 @@ void changer_valeur(Dataframe *df) {
 
         printf("Saisissez le numéro de ligne de la valeur que vous voulez changer : ");
         scanf("%d", &ligne);
-        while (ligne >= df->colonnes[colonne]->taille_logique) {
+        while (ligne >= df->colonnes[colonne]->nombre_elements) {
             printf("Vous avez saisi un numéro de ligne supérieur au nombre de lignes.\n");
             printf("Resaisissez le numéro de ligne de la valeur que vous voulez changer : ");
             scanf("%d", &ligne);
@@ -370,7 +374,7 @@ void changer_valeur(Dataframe *df) {
 
         printf("Saisissez la nouvelle valeur : ");
         scanf("%d", &nouvelle_valeur);
-        df->colonnes[colonne]->donnees[ligne] = nouvelle_valeur; // Remplacer la valeur
+        df->colonnes[colonne]->valeurs[ligne] = nouvelle_valeur; // Remplacer la valeur
     }
 }
 
@@ -384,7 +388,7 @@ void afficher_noms_colonnes(Dataframe *df) {
     } else {
         // Afficher le titre de chaque colonne
         for (int i = 0; i < df->nombre_logique; i++) {
-            printf("Titre de la colonne %d : %s\n", i, df->colonnes[i]->titre);
+            printf("Titre de la colonne %d : %s\n", i, df->colonnes[i]->nom);
         }
     }
 }
@@ -398,7 +402,7 @@ void nombre_lignes(Dataframe *df) {
         fprintf(stderr, "Le Dataframe est NULL\n");
     } else {
         // Afficher le nombre de lignes en utilisant la taille logique de la première colonne
-        printf("Le Dataframe contient %d ligne(s).\n", df->colonnes[0]->taille_logique);
+        printf("Le Dataframe contient %d ligne(s).\n", df->colonnes[0]->nombre_elements);
     }
 }
 
@@ -429,7 +433,7 @@ int nombre_valeurs_egales(Dataframe *df, int valeur) {
         int occurrences = 0;
         // Parcourir chaque colonne et compter les occurrences de la valeur
         for (int i = 0; i < df->nombre_logique; i++) {
-            occurrences += occurence(df->colonnes[i], valeur);
+            occurrences += compter_occurrences(df->colonnes[i], valeur);
         }
         return occurrences;
     }
@@ -449,7 +453,7 @@ int nombre_valeurs_superieures(Dataframe *df, int valeur) {
         int superieures = 0;
         // Parcourir chaque colonne et compter les valeurs supérieures à la valeur donnée
         for (int i = 0; i < df->nombre_logique; i++) {
-            superieures += nb_val_sup(df->colonnes[i], valeur);
+            superieures += compter_valeurs_superieures(df->colonnes[i], valeur);
         }
         return superieures;
     }
@@ -469,7 +473,7 @@ int nombre_valeurs_inferieures(Dataframe *df, int valeur) {
         int inferieures = 0;
         // Parcourir chaque colonne et compter les valeurs inférieures à la valeur donnée
         for (int i = 0; i < df->nombre_logique; i++) {
-            inferieures += nb_val_inf(df->colonnes[i], valeur);
+            inferieures += compter_valeurs_inferieures(df->colonnes[i], valeur);
         }
         return inferieures;
     }
