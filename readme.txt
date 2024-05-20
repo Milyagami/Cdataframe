@@ -11,4 +11,4 @@ Le projet contient les fichiers suivants :
 	•	CDataframe.h : Contient les fonctions pour manipuler les dataframes.
 	•	column.h : Contient les fonctions pour manipuler les colonnes.
 	•	main.c : Fichier principal contenant un exemple d'utilisation des fonctions.
-	•	ligne_de_test.c : Fichier de test pour vérifier les fonctionnalités des colonnes.
+	•	ligne_de_test.h : Fichier de test pour vérifier les fonctionnalités des colonnes.
