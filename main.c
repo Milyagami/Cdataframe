@@ -1,31 +1,50 @@
 #include "CDataframe.h"
 
-
 int main() {
-    CDataframe *mydf = create_dataframe();
-    Remplissage_dur(mydf);
-    afficher_dataframe(mydf);
-    afficher_noms_colonnes(mydf);
+    // Créer un nouveau dataframe vide
+    Dataframe *mon_dataframe = creer_dataframe();
+
+    // Remplir le dataframe avec des valeurs prédéfinies
+    remplir_dataframe_predefini(mon_dataframe);
+
+    // Afficher le contenu complet du dataframe
+    afficher_dataframe(mon_dataframe);
+
+    // Afficher les noms des colonnes du dataframe
+    afficher_noms_colonnes(mon_dataframe);
+
     /*
-    remplacer_valeur(mydf);
-    afficher_dataframe(mydf);
+    // Remplacer une valeur spécifique dans le dataframe
+    changer_valeur(mon_dataframe);
+    // Afficher le dataframe après avoir changé la valeur
+    afficher_dataframe(mon_dataframe);
 
-    renommer_colonne(mydf);
-    afficher_dataframe(mydf);
+    // Renommer une colonne du dataframe
+    renommer_colonne(mon_dataframe);
+    // Afficher le dataframe après avoir renommé la colonne
+    afficher_dataframe(mon_dataframe);
 
-    ajouter_ligne(mydf);
-    afficher_dataframe(mydf);
+    // Ajouter une nouvelle ligne de valeurs au dataframe
+    ajouter_ligne(mon_dataframe);
+    // Afficher le dataframe après avoir ajouté une ligne
+    afficher_dataframe(mon_dataframe);
 
-    supprimer_ligne(mydf);
-    afficher_dataframe(mydf);
+    // Supprimer la dernière ligne de valeurs du dataframe
+    enlever_ligne(mon_dataframe);
+    // Afficher le dataframe après avoir supprimé une ligne
+    afficher_dataframe(mon_dataframe);
 
-    supprimer_colonne(mydf);
-    afficher_dataframe(mydf);
+    // Supprimer une colonne du dataframe
+    enlever_colonne(mon_dataframe);
+    // Afficher le dataframe après avoir supprimé une colonne
+    afficher_dataframe(mon_dataframe);
 
-    ajouter_colonne(mydf);
-    afficher_dataframe(mydf);
+    // Ajouter une nouvelle colonne au dataframe
+    ajouter_colonne(mon_dataframe);
+    // Afficher le dataframe après avoir ajouté une colonne
+    afficher_dataframe(mon_dataframe);
     */
+
+    // Fin du programme principal
     return 0;
 }
-// Created by Mathis on 22/04/2024.
-//
