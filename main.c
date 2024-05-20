@@ -3,7 +3,7 @@
 int main() {
     // Créer un nouveau dataframe vide
     Dataframe *mon_dataframe = creer_dataframe();
-
+/*
     // Remplir le dataframe avec des valeurs prédéfinies
     remplir_dataframe_predefini(mon_dataframe);
 
@@ -13,7 +13,7 @@ int main() {
     // Afficher les noms des colonnes du dataframe
     afficher_noms_colonnes(mon_dataframe);
 
-    /*
+    
     // Remplacer une valeur spécifique dans le dataframe
     changer_valeur(mon_dataframe);
     // Afficher le dataframe après avoir changé la valeur
