@@ -19,7 +19,7 @@ COLONNE *creer_colonne(char* titre) {
     // Allouer de la mémoire pour une nouvelle colonne
     COLONNE *nouvelle_colonne = (COLONNE*)malloc(sizeof(COLONNE));
     if (nouvelle_colonne == NULL) {
-        fprintf(stderr, "Erreur d'allocation de mémoire\n");
+        fprintf(stderr, "Impossible d'allouer de la mémoire pour la nouvelle colonne.\n");
         return 0;
     }
     // Allouer de la mémoire pour le titre de la colonne
@@ -41,7 +41,7 @@ COLONNE *creer_colonne(char* titre) {
 */
 int ajouter_valeur(COLONNE* col, int valeur) {
     if (col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
         return 0;
     }
     // Si la taille logique atteint la taille physique, augmenter la taille physique
@@ -50,7 +50,7 @@ int ajouter_valeur(COLONNE* col, int valeur) {
         // Réallouer de la mémoire pour les nouvelles données
         int* nouvelles_valeurs = (int *)realloc(col->valeurs, (col->capacite) * sizeof(int));
         if (nouvelles_valeurs == NULL) {
-            fprintf(stderr, "Erreur d'allocation de mémoire\n");
+            fprintf(stderr, "Impossible d'allouer de la mémoire pour les nouvelles valeurs.\n");
             return 0;
         }
         col->valeurs = nouvelles_valeurs;
@@ -67,7 +67,7 @@ int ajouter_valeur(COLONNE* col, int valeur) {
 */
 void liberer_colonne(COLONNE **col) {
     if (col == NULL || *col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
     } else {
         // Libérer le tableau de données
         free((*col)->valeurs);
@@ -87,7 +87,7 @@ void liberer_colonne(COLONNE **col) {
 */
 void afficher_colonne(COLONNE* col) {
     if (col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
     } else {
         // Parcourir et afficher chaque élément de la colonne
         for (int i = 0; i < col->nombre_elements; i++) {
@@ -104,7 +104,7 @@ void afficher_colonne(COLONNE* col) {
 */
 int compter_occurrences(COLONNE* col, int x) {
     if (col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
         return -1;
     }
     int occurrences = 0;
@@ -125,11 +125,11 @@ int compter_occurrences(COLONNE* col, int x) {
 */
 int rechercher_valeur(COLONNE* col, int indice) {
     if (col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
         return -1;
     }
     if (indice >= col->nombre_elements) {
-        printf("La position %d est supérieure à la taille du tableau\n", indice);
+        printf("La position %d dépasse la taille de la colonne.\n", indice);
         return -1;
     }
     return col->valeurs[indice];
@@ -143,7 +143,7 @@ int rechercher_valeur(COLONNE* col, int indice) {
 */
 int compter_valeurs_superieures(COLONNE* col, int valeur) {
     if (col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
         return -1;
     }
     int nombre_superieures = 0;
@@ -164,7 +164,7 @@ int compter_valeurs_superieures(COLONNE* col, int valeur) {
 */
 int compter_valeurs_inferieures(COLONNE* col, int valeur) {
     if (col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
         return -1;
     }
     int nombre_inferieures = 0;
@@ -185,7 +185,7 @@ int compter_valeurs_inferieures(COLONNE* col, int valeur) {
 */
 int compter_valeurs_egales(COLONNE* col, int valeur) {
     if (col == NULL) {
-        fprintf(stderr, "La colonne est NULL\n");
+        fprintf(stderr, "Erreur: la colonne est introuvable.\n");
         return -1;
     }
     int nombre_egales = 0;
